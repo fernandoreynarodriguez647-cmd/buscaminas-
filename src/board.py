@@ -1,4 +1,5 @@
 import random
+import copy
 
 
 class Board:
@@ -11,7 +12,11 @@ class Board:
         self.numeros = [[0 for _ in range(columnas)] for _ in range(filas)]
         self._colocar_minas()
         self._calcular_numeros()
-        self._primera_jugada = True
+        self.game_over = False
+        self.won = False
+        self.banderas_colocadas = 0
+        self.descubiertas = 0
+        self.minas_marcadas = 0
 
     def _colocar_minas(self):
         puestos = set()
@@ -45,19 +50,44 @@ class Board:
         return result
 
     def descubrir(self, f, c):
+        if self.game_over or self.won:
+            return
         if self.estado[f][c] != 'oculta':
             return
+        if self.minas[f][c]:
+            self.estado[f][c] = 'descubierta'
+            self.game_over = True
+            return
         self.estado[f][c] = 'descubierta'
-        if self.numeros[f][c] == 0 and not self.minas[f][c]:
+        self.descubiertas += 1
+        if self.numeros[f][c] == 0:
             for vf, vc in self._vecinos(f, c):
                 if self.estado[vf][vc] == 'oculta':
                     self.descubrir(vf, vc)
+        self._verificar_victoria()
 
     def marcar_bandera(self, f, c):
+        if self.game_over or self.won:
+            return
         if self.estado[f][c] == 'oculta':
             self.estado[f][c] = 'bandera'
+            self.banderas_colocadas += 1
+            if self.minas[f][c]:
+                self.minas_marcadas += 1
         elif self.estado[f][c] == 'bandera':
             self.estado[f][c] = 'oculta'
+            self.banderas_colocadas -= 1
+            if self.minas[f][c]:
+                self.minas_marcadas -= 1
+        self._verificar_victoria()
+
+    def _verificar_victoria(self):
+        total_seguras = self.filas * self.columnas - self.num_minas
+        if self.descubiertas >= total_seguras:
+            self.won = True
+
+    def minas_restantes(self):
+        return self.num_minas - self.banderas_colocadas
 
     def obtener_casillas_frontera(self):
         frontera = set()
@@ -70,6 +100,17 @@ class Board:
                             break
         return frontera
 
+    def obtener_todas_ocultas(self):
+        ocultas = set()
+        for f in range(self.filas):
+            for c in range(self.columnas):
+                if self.estado[f][c] == 'oculta':
+                    ocultas.add((f, c))
+        return ocultas
+
+    def clonar_para_bot(self):
+        return copy.deepcopy(self)
+
     def __str__(self):
         lines = []
         for f in range(self.filas):
@@ -80,7 +121,9 @@ class Board:
                 elif self.estado[f][c] == 'bandera':
                     line += 'F '
                 else:
-                    if self.numeros[f][c] == 0:
+                    if self.minas[f][c] and self.game_over:
+                        line += 'X '
+                    elif self.numeros[f][c] == 0:
                         line += '. '
                     else:
                         line += str(self.numeros[f][c]) + ' '
