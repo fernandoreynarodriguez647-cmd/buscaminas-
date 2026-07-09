@@ -3,14 +3,18 @@ import copy
 
 
 class Board:
-    def __init__(self, filas, columnas, num_minas):
+    def __init__(self, filas, columnas, num_minas, minas_predefinidas=None):
         self.filas = filas
         self.columnas = columnas
         self.num_minas = num_minas
         self.estado = [['oculta' for _ in range(columnas)] for _ in range(filas)]
         self.minas = [[False for _ in range(columnas)] for _ in range(filas)]
         self.numeros = [[0 for _ in range(columnas)] for _ in range(filas)]
-        self._colocar_minas()
+        if minas_predefinidas:
+            for f, c in minas_predefinidas:
+                self.minas[f][c] = True
+        else:
+            self._colocar_minas()
         self._calcular_numeros()
         self.game_over = False
         self.won = False

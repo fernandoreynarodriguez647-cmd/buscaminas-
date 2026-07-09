@@ -1,14 +1,12 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from src.graph_analysis import metricas_grafo, obtener_componentes
-import numpy as np
-
 
 COLORS = ['#4A90D9', '#50C878', '#E74C3C', '#F39C12', '#9B59B6',
           '#1ABC9C', '#E91E63', '#00BCD4', '#FF5722', '#8BC34A']
 
 
 def dibujar_grafo(grafo, componentes=None, mostrar=True, titulo='Grafo de restricciones del Buscaminas'):
+    from src.graph_analysis import metricas_grafo, obtener_componentes
     if grafo.number_of_nodes() == 0:
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.text(0.5, 0.5, 'Grafo vacío — sin casillas frontera',
@@ -48,6 +46,7 @@ def dibujar_grafo(grafo, componentes=None, mostrar=True, titulo='Grafo de restri
 
 
 def dibujar_grafo_comparativa(grafo_humano, componentes_h, grafo_bot, componentes_b):
+    from src.graph_analysis import metricas_grafo
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     for ax, grafo, comps, titulo in [
         (ax1, grafo_humano, componentes_h, 'Humano'),

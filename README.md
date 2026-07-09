@@ -29,7 +29,6 @@ buscaminas_grafos/
 │   ├── test_graph_builder.py
 │   ├── test_graph_analysis.py
 │   └── test_solver_csp.py
-├── main.py                 # CLI
 ├── streamlit_app.py        # Dashboard web
 └── requirements.txt
 ```
@@ -42,28 +41,30 @@ buscaminas_grafos/
 streamlit run streamlit_app.py
 ```
 
-Tres modos de juego:
+Navegación: menú lateral con Inicio, Jugar, Perfil, Tiempos.
+
+### Modos de juego
 
 | Modo | Descripción |
 |------|-------------|
 | **Practicar** | Juega solo, observa el grafo de restricciones en tiempo real |
-| **Vs Bot** | Compite contra la IA basada en CSP. Gana quien termine primero |
-| **Demo Bot** | Mira al bot resolver el tablero automáticamente |
+| **Vs Bot** | Humano y bot comparten el mismo tablero. Gana quien lo resuelva primero |
+| **Demo Bot** | Observa al bot resolver paso a paso con explicaciones detalladas |
 
-Funcionalidades:
+### Funcionalidades
 
 - Dificultades: Principiante (9×9, 10 minas), Intermedio (16×16, 40), Experto (16×30, 99), Personalizado
 - Timer en tiempo real para humano y bot
+- Botón "← Volver" en cada página para navegación rápida
+- Botón "← Inicio" en Perfil y Tiempos
+- En Vs Bot: el bot avanza 3 pasos por click con explicación CSP
+- En Demo Bot: bot paso a paso con resaltado visual de la última jugada
 - Visualización del grafo coloreado por componentes conexas
-- Métricas: nodos, aristas, componentes, densidad, grado promedio
+- Métricas: nodos, aristas, componentes, densidad, grado promedio, agrupamiento
 - Historial de partidas persistente con estadísticas globales
+- Sistema de rangos: Bronce → Plata → Oro según win rate y partidas
+- Podio de mejores tiempos por dificultad
 - Exportación de historial a JSON
-
-### Línea de comandos
-
-```bash
-python main.py
-```
 
 ### Tests
 
@@ -81,7 +82,6 @@ python tests/test_solver_csp.py
 - `game_over`, `won`, `banderas_colocadas`, `minas_restantes()` para estado de juego
 - `obtener_casillas_frontera()`: casillas ocultas relevantes para el grafo
 - `obtener_todas_ocultas()`: todas las casillas aún ocultas
-- `clonar_para_bot()`: clon profundo para que el bot juegue en copia independiente
 
 ### `graph_builder.py` — Grafo de restricciones
 
@@ -102,7 +102,6 @@ python tests/test_solver_csp.py
 ### `visualizer.py` — Visualización
 
 - `dibujar_grafo()`: grafo coloreado, tamaño de nodos según grado, métricas en título
-- `dibujar_grafo_comparativa()`: comparación lado a lado humano vs bot
 
 ## Repositorio
 

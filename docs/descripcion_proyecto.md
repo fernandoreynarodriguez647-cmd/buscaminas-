@@ -32,7 +32,6 @@ Clase `Board` con toda la lógica del juego:
 - **marcar_bandera(f, c)**: alterna bandera; actualiza contadores de banderas y minas marcadas
 - **obtener_casillas_frontera()**: casillas ocultas con al menos un vecino descubierto numerado
 - **obtener_todas_ocultas()**: todas las casillas aún ocultas
-- **clonar_para_bot()**: deep copy para que el bot juegue en un tablero independiente
 - **minas_restantes()**: `num_minas - banderas_colocadas`
 - **Atributos de estado**: `game_over`, `won`, `banderas_colocadas`, `descubiertas`
 
@@ -72,11 +71,15 @@ Clase `Board` con toda la lógica del juego:
 ### `src/visualizer.py` — Visualización
 
 - **dibujar_grafo()**: grafo con spring layout, nodos coloreados por componente, tamaño según grado, métricas en el título
-- **dibujar_grafo_comparativa()**: dos gráficos lado a lado (humano vs bot) para comparación visual
 
 ## Dashboard interactivo (Streamlit)
 
-`streamlit_app.py` — Interfaz web completa con tres modos:
+`streamlit_app.py` — Interfaz web completa con navegación tipo menú:
+
+### Navegación
+- Barra lateral con 4 secciones siempre visibles: Inicio, Jugar, Perfil, Tiempos
+- Botón "← Volver" en Jugar para regresar a selección de modo
+- Botón "← Inicio" en Perfil y Tiempos
 
 ### Modo Practicar
 - Juego clásico de Buscaminas con configuración de dificultad
@@ -85,19 +88,30 @@ Clase `Board` con toda la lógica del juego:
 - Exploración expandible de cada componente y sus restricciones
 
 ### Modo Vs Bot
-- Humano y bot juegan en tableros idénticos (mismas minas)
+- Humano y bot comparten el **mismo tablero** (misma distribución de minas)
 - Timer independiente para cada jugador
-- El humano hace clics; el bot avanza con un botón "Turno del Bot"
-- Al finalizar, comparativa visual de los grafos de ambos jugadores
-- Resultado: gana quien termina primero (o el que logra victoria si el otro pierde)
+- El humano hace clics; el bot avanza con "🤖 Turno del Bot (3 pasos)"
+- El bot aplica CSP + AC-3 para decidir su jugada
+- Gana quien resuelve el tablero primero
 
 ### Modo Demo Bot
-- El bot juega automáticamente en tiempo real
-- Ideal para observar estrategias óptimas de la IA
+- El bot juega paso a paso sobre su propio tablero
+- Botón "▶️ Iniciar Bot — Paso a paso" y luego "⏭ Siguiente paso"
+- La última jugada del bot se resalta visualmente (borde verde + fondo)
+- Panel de explicación detallada de cada movimiento (deducción CSP, riesgo probabilístico, etc.)
+- Ideal para aprender estrategias óptimas observando la IA
+
+### Sistema de rangos
+- Bronce: win rate ≥ 0% y mínimo 1 partida
+- Plata: win rate ≥ 45% y mínimo 5 partidas
+- Oro: win rate ≥ 70% y mínimo 15 partidas
+- Visualización del progreso hacia el siguiente rango
 
 ### Historial de partidas
 - Persistente en archivo JSON (`historial_partidas.json`)
 - Estadísticas globales: total, victorias, derrotas, win rate
+- Mejores tiempos por dificultad con podio (🥇🥈🥉)
+- Top 10 mejores tiempos globales
 - Exportación a JSON descargable
 - Vista detallada de cada partida con todas las métricas
 
@@ -116,7 +130,7 @@ Clase `Board` con toda la lógica del juego:
 
 ### tests/test_solver_csp.py (3 tests)
 - CSP resuelve 8 vecinas con mina en esquina
-- Bot realiza un movimiento válido
+- Bot realiza un movimiento válido (retorna 3-tupla con explicación)
 - CSP sin restricciones devuelve vacío
 
 ## Tecnologías
@@ -151,9 +165,15 @@ https://github.com/fernandoreynarodriguez647-cmd/buscaminas-.git
 - ✅ Métricas de grafos (densidad, grado, agrupamiento)
 - ✅ Solver CSP con AC-3
 - ✅ Bot jugador inteligente
-- ✅ Visualización matplotlib (individual y comparativa)
-- ✅ Dashboard Streamlit (3 modos de juego)
+- ✅ Visualización matplotlib (individual)
+- ✅ Dashboard Streamlit (3 modos de juego, navegación tipo menú)
+- ✅ Vs Bot con tablero compartido
+- ✅ Demo Bot paso a paso con explicaciones y resaltado visual
+- ✅ Sistema de rangos (Bronce/Plata/Oro)
+- ✅ Podio y top 10 de mejores tiempos
 - ✅ Timer y estadísticas en vivo
 - ✅ Historial de partidas persistente
+- ✅ Exportación a JSON
 - ✅ Tests unitarios (13 tests)
+- ✅ Navegación con botones Volver/Inicio
 - ✅ Repositorio en GitHub

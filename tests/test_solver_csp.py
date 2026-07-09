@@ -21,8 +21,9 @@ def test_bot_hace_movimiento():
     board = Board(5, 5, 3)
     board.descubrir(2, 2)
     bot = BotJugador(board)
-    accion, pos = bot.jugar_turno()
+    accion, pos, explicacion = bot.jugar_turno()
     assert accion in ('descubrir', 'marcar', 'nada')
+    assert isinstance(explicacion, str)
 
 
 def test_csp_sin_restricciones():

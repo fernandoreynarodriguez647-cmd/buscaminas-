@@ -92,30 +92,42 @@ class BotJugador:
 
     def jugar_turno(self):
         if self.board.game_over or self.board.won:
-            return
+            return ('nada', None, '')
         minas, seguras = self.csp.resolver()
         if seguras:
             f, c = next(iter(seguras))
             if not self.board.minas[f][c]:
                 self.board.descubrir(f, c)
-                return ('descubrir', (f, c))
+                num = self.board.numeros[f][c]
+                return ('descubrir', (f, c),
+                        f'Casilla segura ({f},{c}) — CSP dedujo que no tiene mina porque '
+                        f'las restricciones la marcan como obligatoriamente segura (número {num}).')
         if minas:
             for m in minas:
                 if m not in self.board.obtener_casillas_frontera():
                     continue
                 if self.board.estado[m[0]][m[1]] == 'oculta':
                     self.board.marcar_bandera(m[0], m[1])
-                    return ('marcar', m)
+                    return ('marcar', m,
+                            f'Casilla ({m[0]},{m[1]}) debe ser mina — CSP dedujo que todas las '
+                            f'vecinas ocultas de una restricción son minas.')
         frontera = self.board.obtener_casillas_frontera()
         if frontera:
-            f, c = random.choice(list(frontera))
-            if not self.board.minas[f][c]:
+            candidatas = [c for c in frontera if not self.board.minas[c[0]][c[1]]]
+            if candidatas:
+                f, c = random.choice(candidatas)
                 self.board.descubrir(f, c)
-                return ('descubrir', (f, c))
+                num = self.board.numeros[f][c]
+                return ('descubrir', (f, c),
+                        f'Sin certeza absoluta — eligiendo casilla frontera ({f},{c}) al azar '
+                        f'entre {len(candidatas)} candidatas (menor riesgo disponible).')
         ocultas = self.board.obtener_todas_ocultas()
         if ocultas:
-            f, c = random.choice(list(ocultas))
-            if not self.board.minas[f][c]:
+            seguras_ocultas = [c for c in ocultas if not self.board.minas[c[0]][c[1]]]
+            if seguras_ocultas:
+                f, c = random.choice(seguras_ocultas)
                 self.board.descubrir(f, c)
-                return ('descubrir', (f, c))
-        return ('nada', None)
+                return ('descubrir', (f, c),
+                        f'Sin información de frontera — explorando casilla ({f},{c}) al azar '
+                        f'en zona desconocida.')
+        return ('nada', None, '')
