@@ -833,7 +833,7 @@ def main():
         nombres = list(nav_opts.keys())
         valores = list(nav_opts.values())
         idx = valores.index(c_act) if c_act in valores else 0
-        sel = st.radio("", nombres, index=idx)
+        sel = st.radio("Navegación", nombres, index=idx, label_visibility="collapsed")
         st.session_state.pagina_activa = nav_opts[sel]
 
         if st.session_state.pagina_activa == 'Jugar' and st.session_state.partida_iniciada:
